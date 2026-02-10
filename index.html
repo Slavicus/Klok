@@ -175,23 +175,27 @@ function generateDutchTime() {
   const h = Math.floor(Math.random() * 12);
   const p = patterns[Math.floor(Math.random() * patterns.length)];
 
-  let spoken = h;
-  let realHour = h + 1;
-
+  // --- spoken hour (для текста) ---
+  let spokenHourIndex = h;
   if (p.key.includes("half") || p.key.includes("voor")) {
-    spoken = (h + 1) % 12;
+    spokenHourIndex = (h + 1) % 12;
   }
 
-  let realHour = h + 1;
+  // --- real hour (для стрелки) ---
+  const realHour = h + 1;
+  const minutes = p.minutes;
 
   const text =
     p.key === "uur"
-      ? `Het is ${hours[spoken]} uur`
-      : `Het is ${p.key} ${hours[spoken]}`;
+      ? `Het is ${hours[spokenHourIndex]} uur`
+      : `Het is ${p.key} ${hours[spokenHourIndex]}`;
 
-  return { text, hour: realHour, minutes: p.minutes };
+  return {
+    text,
+    hour: realHour,
+    minutes
+  };
 }
-
 /* ---------- ОЗВУЧКА ---------- */
 
 function speakDutch(text) {
