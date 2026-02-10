@@ -1,213 +1,225 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8" />
-    <title>Nederlands – Hoe laat is het?</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nederlands – Hoe laat is het?</title>
 
-    <style>
-        body {
-            font-family: system-ui, sans-serif;
-            background: #f2f2f2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 30px;
-        }
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+  }
 
-        svg {
-            width: 300px;
-            height: 300px;
-        }
+  /* ====== КЛЮЧЕВОЕ: РЕЗИНОВЫЙ SVG ====== */
+  svg {
+    width: min(90vw, 80vh, 520px);
+    height: auto;
+    margin-bottom: 20px;
+  }
 
-        .clock-face {
-            fill: white;
-            stroke: #333;
-            stroke-width: 4;
-        }
+  .clock-face {
+    fill: white;
+    stroke: #333;
+    stroke-width: 4;
+  }
 
-        .number {
-            font-size: 14px;
-            text-anchor: middle;
-            dominant-baseline: middle;
-            fill: #111;
-        }
+  .number {
+    font-size: 14px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    fill: #111;
+  }
 
-        .hour-hand {
-            stroke: #111;
-            stroke-width: 6;
-            stroke-linecap: round;
-            transform-origin: 100px 100px;
-            transition: transform 0.4s ease;
-        }
+  .hour-hand {
+    stroke: #111;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transform-origin: 100px 100px;
+    transition: transform 0.4s ease;
+  }
 
-        .minute-hand {
-            stroke: #111;
-            stroke-width: 4;
-            stroke-linecap: round;
-            transform-origin: 100px 100px;
-            transition: transform 0.4s ease;
-        }
+  .minute-hand {
+    stroke: #111;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transform-origin: 100px 100px;
+    transition: transform 0.4s ease;
+  }
 
-        .center {
-            fill: #111;
-        }
+  .center {
+    fill: #111;
+  }
 
-        .controls {
-            margin-top: 20px;
-        }
+  .controls {
+    display: flex;
+    gap: 16px;
+    margin: 10px 0 16px;
+  }
 
-        button {
-            margin: 0 6px;
-            padding: 10px 16px;
-            font-size: 16px;
-        }
+  button {
+    padding: 14px 24px;
+    font-size: 18px;
+    border-radius: 999px;
+    border: none;
+    background: #e5e5e5;
+  }
 
-        .text {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: 500;
-        }
-    </style>
+  button:active {
+    transform: scale(0.97);
+  }
+
+  .text {
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* ====== DESKTOP ====== */
+  @media (min-width: 900px) {
+    svg {
+      width: min(70vw, 70vh, 700px);
+    }
+
+    .number {
+      font-size: 16px;
+    }
+
+    .text {
+      font-size: 28px;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 16px 30px;
+    }
+  }
+</style>
 </head>
 
 <body>
 
 <svg viewBox="0 0 200 200">
-    <!-- циферблат -->
-    <circle cx="100" cy="100" r="95" class="clock-face"/>
+  <circle cx="100" cy="100" r="95" class="clock-face"/>
+  <g id="numbers"></g>
 
-    <!-- цифры -->
-    <g id="numbers"></g>
+  <line id="hourHand" x1="100" y1="100" x2="100" y2="55" class="hour-hand"/>
+  <line id="minuteHand" x1="100" y1="100" x2="100" y2="35" class="minute-hand"/>
 
-    <!-- стрелки -->
-    <line id="hourHand" x1="100" y1="100" x2="100" y2="55" class="hour-hand"/>
-    <line id="minuteHand" x1="100" y1="100" x2="100" y2="35" class="minute-hand"/>
-
-    <!-- центр -->
-    <circle cx="100" cy="100" r="4" class="center"/>
+  <circle cx="100" cy="100" r="4" class="center"/>
 </svg>
 
 <div class="controls">
-    <button onclick="nextTime()">Volgende</button>
-    <button onclick="repeatTime()">Herhaal</button>
+  <button onclick="nextTime()">Volgende</button>
+  <button onclick="repeatTime()">Herhaal</button>
 </div>
 
 <div class="text" id="text"></div>
 
 <script>
-    /* ------------------ ЦИФЕРБЛАТ ------------------ */
+/* ---------- ЦИФЕРБЛАТ ---------- */
 
-    const numbersGroup = document.getElementById("numbers");
+const numbersGroup = document.getElementById("numbers");
 
-    for (let i = 1; i <= 12; i++) {
-        const angle = (i - 3) * 30 * Math.PI / 180;
-        const x = 100 + Math.cos(angle) * 75;
-        const y = 100 + Math.sin(angle) * 75;
+for (let i = 1; i <= 12; i++) {
+  const angle = (i - 3) * 30 * Math.PI / 180;
+  const x = 100 + Math.cos(angle) * 75;
+  const y = 100 + Math.sin(angle) * 75;
 
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", x);
-        text.setAttribute("y", y);
-        text.textContent = i;
-        text.classList.add("number");
+  const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  t.setAttribute("x", x);
+  t.setAttribute("y", y);
+  t.textContent = i;
+  t.classList.add("number");
+  numbersGroup.appendChild(t);
+}
 
-        numbersGroup.appendChild(text);
-    }
+const hourHand = document.getElementById("hourHand");
+const minuteHand = document.getElementById("minuteHand");
 
-    const hourHand = document.getElementById("hourHand");
-    const minuteHand = document.getElementById("minuteHand");
+function setTime(hour, minutes) {
+  minuteHand.style.transform = `rotate(${minutes * 6}deg)`;
+  hourHand.style.transform =
+    `rotate(${(hour % 12) * 30 + minutes * 0.5}deg)`;
+}
 
-    function setTime(hour, minutes) {
-        const minuteAngle = minutes * 6;
-        const hourAngle = (hour % 12) * 30 + minutes * 0.5;
+/* ---------- ЛОГИКА NL ---------- */
 
-        minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
-        hourHand.style.transform = `rotate(${hourAngle}deg)`;
-    }
+const patterns = [
+  { key: "uur", minutes: 0, label: "uur" },
+  { key: "vijf over", minutes: 5 },
+  { key: "tien over", minutes: 10 },
+  { key: "kwart over", minutes: 15 },
+  { key: "tien voor half", minutes: 20 },
+  { key: "vijf voor half", minutes: 25 },
+  { key: "half", minutes: 30 },
+  { key: "vijf over half", minutes: 35 },
+  { key: "tien over half", minutes: 40 },
+  { key: "kwart voor", minutes: 45 },
+  { key: "tien voor", minutes: 50 },
+  { key: "vijf voor", minutes: 55 }
+];
 
-    /* ------------------ ЛОГИКА NL ------------------ */
+const hours = [
+  "een","twee","drie","vier","vijf","zes",
+  "zeven","acht","negen","tien","elf","twaalf"
+];
 
-    const patterns = [
-        { key: "uur", minutes: 0, label: "uur" },
-        { key: "vijf_over", minutes: 5, label: "vijf over" },
-        { key: "tien_over", minutes: 10, label: "tien over" },
-        { key: "kwart_over", minutes: 15, label: "kwart over" },
+function generateDutchTime() {
+  const h = Math.floor(Math.random() * 12);
+  const p = patterns[Math.floor(Math.random() * patterns.length)];
 
-        { key: "tien_voor_half", minutes: 20, label: "tien voor half" },
-        { key: "vijf_voor_half", minutes: 25, label: "vijf voor half" },
+  let spoken = h;
+  let realHour = h + 1;
 
-        { key: "half", minutes: 30, label: "half" },
+  if (p.key.includes("half") || p.key.includes("voor")) {
+    spoken = (h + 1) % 12;
+  }
 
-        { key: "vijf_over_half", minutes: 35, label: "vijf over half" },
-        { key: "tien_over_half", minutes: 40, label: "tien over half" },
+  if (p.minutes >= 20) {
+    realHour = ((h + 1) % 12) + 1;
+  }
 
-        { key: "kwart_voor", minutes: 45, label: "kwart voor" },
-        { key: "tien_voor", minutes: 50, label: "tien voor" },
-        { key: "vijf_voor", minutes: 55, label: "vijf voor" }
-    ];
+  const text =
+    p.key === "uur"
+      ? `Het is ${hours[spoken]} uur`
+      : `Het is ${p.key} ${hours[spoken]}`;
 
-    const hours = [
-        "een", "twee", "drie", "vier", "vijf", "zes",
-        "zeven", "acht", "negen", "tien", "elf", "twaalf"
-    ];
+  return { text, hour: realHour, minutes: p.minutes };
+}
 
-    function generateDutchTime() {
-        const hourIndex = Math.floor(Math.random() * 12);
-        const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+/* ---------- ОЗВУЧКА ---------- */
 
-        let spokenHourIndex = hourIndex;
-        let realHour = hourIndex + 1;
-        const minutes = pattern.minutes;
+function speakDutch(text) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "nl-NL";
+  u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
 
-        if (pattern.key.includes("half") || pattern.key.includes("voor")) {
-            spokenHourIndex = (hourIndex + 1) % 12;
-        }
+/* ---------- УПРАВЛЕНИЕ ---------- */
 
-        if (minutes >= 20) {
-            realHour = ((hourIndex + 1) % 12) + 1;
-        }
+let current = null;
 
-        let text;
-        if (pattern.key === "uur") {
-            text = `Het is ${hours[spokenHourIndex]} uur`;
-        } else {
-            text = `Het is ${pattern.label} ${hours[spokenHourIndex]}`;
-        }
+function nextTime() {
+  current = generateDutchTime();
+  setTime(current.hour, current.minutes);
+  document.getElementById("text").textContent = current.text;
+  speakDutch(current.text);
+}
 
-        return { text, hour: realHour, minutes };
-    }
+function repeatTime() {
+  if (current) speakDutch(current.text);
+}
 
-    /* ------------------ ОЗВУЧКА ------------------ */
-
-    function speakDutch(text) {
-        speechSynthesis.cancel();
-
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "nl-NL";
-        u.rate = 0.9;
-        u.pitch = 1.0;
-
-        speechSynthesis.speak(u);
-    }
-
-    /* ------------------ УПРАВЛЕНИЕ ------------------ */
-
-    let currentTime = null;
-
-    function nextTime() {
-        currentTime = generateDutchTime();
-        setTime(currentTime.hour, currentTime.minutes);
-        document.getElementById("text").textContent = currentTime.text;
-        speakDutch(currentTime.text);
-    }
-
-    function repeatTime() {
-        if (currentTime) {
-            speakDutch(currentTime.text);
-        }
-    }
-
-    /* старт */
-    nextTime();
+nextTime();
 </script>
 
 </body>
