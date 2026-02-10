@@ -182,9 +182,7 @@ function generateDutchTime() {
     spoken = (h + 1) % 12;
   }
 
-  if (p.minutes >= 20) {
-    realHour = ((h + 1) % 12) + 1;
-  }
+  let realHour = h + 1;
 
   const text =
     p.key === "uur"
